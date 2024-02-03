@@ -1,0 +1,134 @@
+version: "3.8"
+
+services:
+
+  keycloak-db:
+    image: "postgres:latest"
+    container_name: "keycloak-db"
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${KEYCLOAK_DB}
+      POSTGRES_USER: ${KEYCLOAK_DB_USER}
+      POSTGRES_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
+    volumes:
+      - ./keycloak/keycloak-db-data:/var/lib/postgresql/data
+
+  keycloak:
+    image: "quay.io/keycloak/keycloak:latest"
+    container_name: "keycloak"
+    restart: unless-stopped
+    depends_on:
+      - keycloak-db
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://keycloak-db/${KEYCLOAK_DB}
+      KC_DB_USERNAME: ${KEYCLOAK_DB_USER}
+      KC_DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
+      KC_HTTP_PORT: 9090
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN_USER}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+    command: start-dev --import-realm
+    volumes:
+      - ./keycloak/import:/opt/keycloak/data/import
+    ports:
+      - "9090:9090"
+
+  mongo1:
+    image: mongo:7.0
+    container_name: "mongo1"
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+    volumes:
+      - ./mongo/mongo1-data:/data/db
+      - ./mongo/mongodb.key:/data/mongodb.key
+    command: mongod --replSet rs0 --port 27017 --keyFile /data/mongodb.key
+
+  mongosetup:
+    build: "./mongo/setup"
+    container_name: "mongo-setup"
+    environment:
+      MONGO_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
+      MONGO_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+    depends_on:
+      - mongo1
+    volumes:
+      - ./mongo/status:/data/
+
+  mongo-express:
+    image: mongo-express
+    container_name: "mongo-express"
+    restart: unless-stopped
+    ports:
+      - '6082:8081'
+    depends_on:
+      - mongo1
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_ROOT_USERNAME}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_ROOT_PASSWORD}
+      ME_CONFIG_MONGODB_SERVER: mongo1
+      ME_CONFIG_BASICAUTH: true
+      ME_CONFIG_BASICAUTH_USERNAME: ${MONGO_EXPRESS_USERNAME}
+      ME_CONFIG_BASICAUTH_PASSWORD: ${MONGO_EXPRESS_PASSWORD}
+      ME_CONFIG_MONGODB_URL: mongo://${MONGO_ROOT_USERNAME}:${MONGO_ROOT_PASSWORD}@mongo1:27017/
+
+  studio:
+    image: ruleshake/studio
+    container_name: "ruleshake-studio"
+    restart: unless-stopped
+    ports:
+      - '8080:80'
+    environment:
+      VITE_RULESHAKE_CATALOG_URL: "http://localhost:8081/api"
+      VITE_RULESHAKE_RUNNER_URL: "http://localhost:8082/api"
+      VITE_RULESHAKE_REFERENTIAL_URL: "http://localhost:8083/api"
+      VITE_AUTH_AUTHORITY: ${KEYCLOAK_AUTHORITY_EXTERNAL}
+      VITE_AUTH_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
+      VITE_AUTH_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
+
+  catalog:
+    image: ruleshake/catalog
+    container_name: "ruleshake-catalog"
+    restart: unless-stopped
+    ports:
+      - '8081:8081'
+    environment:
+      CATALOG_PORT: 8081
+      MONGO_URL: mongodb://${RULESHAKE_CATALOG_DB_USERNAME}:${RULESHAKE_CATALOG_DB_PASSWORD}@mongo1:27017
+      REFERENTIAL_URL: http://referential:8083/api
+      RUNNER_URL: http://runner:8082/api
+      OAUTH2_ISSUER_URI: ${KEYCLOAK_AUTHORITY_INTERNAL}
+    depends_on:
+      - mongo1
+      - keycloak
+
+  runner:
+    image: ruleshake/runner
+    container_name: "ruleshake-runner"
+    restart: unless-stopped
+    ports:
+      - '8082:8082'
+    environment:
+      RUNNER_PORT: 8082
+      MONGO_URL: mongodb://${RULESHAKE_RUNNER_DB_USERNAME}:${RULESHAKE_RUNNER_DB_PASSWORD}@mongo1:27017
+      REFERENTIAL_URL: http://referential:8083/api
+      OAUTH2_ISSUER_URI: ${KEYCLOAK_AUTHORITY_INTERNAL}
+    depends_on:
+      - mongo1
+      - keycloak
+
+  referential:
+    image: ruleshake/referential
+    container_name: "ruleshake-referential"
+    restart: unless-stopped
+    ports:
+      - '8083:8083'
+    environment:
+      REFERENTIAL_PORT: 8083
+      MONGO_URL: mongodb://${RULESHAKE_REFERENTIAL_DB_USERNAME}:${RULESHAKE_REFERENTIAL_DB_PASSWORD}@mongo1:27017
+      OAUTH2_ISSUER_URI: ${KEYCLOAK_AUTHORITY_INTERNAL}
+    depends_on:
+      - mongo1
+      - keycloak
+
