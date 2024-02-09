@@ -4,7 +4,7 @@ Start RuleShake suite
 
 ## Requirements
 
-* Install `docker`
+* Install `Docker Compose`: https://docs.docker.com/compose/install/
 * Check these ports are not used on your machine (if so, remplace them in [docker-compose.yml](docker-compose.yml))
   * `9090` for keycloak
   * `6082` for Mongo Express (A web-based MongoDB admin interface)
@@ -30,6 +30,7 @@ Automatic setup allows :
 ```shell
 git clone https://github.com/ruleshake/ruleshake-start.git
 cd ruleshake-start
+chmod 600 mongo/mongodb.key
 docker compose up
 ```
 

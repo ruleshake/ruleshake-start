@@ -490,7 +490,8 @@
       "disableableCredentialTypes": [],
       "requiredActions": [],
       "realmRoles": [
-        "default-roles-ruleshake-samples"
+        "default-roles-ruleshake-samples",
+        "USER"
       ],
       "clientRoles": {
         "ruleshake-studio": [
