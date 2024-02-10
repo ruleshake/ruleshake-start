@@ -13,7 +13,7 @@ services:
     volumes:
       - ./keycloak/keycloak-db-data:/var/lib/postgresql/data
     healthcheck:
-      test: pg_isready -U postgres
+      test: pg_isready -U ${KEYCLOAK_DB_USER}
       interval: 10s
       timeout: 10s
       retries: 5
