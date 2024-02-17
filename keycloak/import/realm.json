@@ -1,6 +1,6 @@
 {
   "id": "783eafab-5a0b-4083-82dc-ab09ff7f549d",
-  "realm": "ruleshake-samples",
+  "realm": "ruleshake-${KEYCLOAK_RULESHAKE_ORGANIZATION}",
   "notBefore": 0,
   "defaultSignatureAlgorithm": "RS256",
   "revokeRefreshToken": false,
@@ -83,7 +83,7 @@
       },
       {
         "id": "c3221d3a-cc3e-446b-b08e-5eceac2469bc",
-        "name": "default-roles-ruleshake-samples",
+        "name": "default-roles-ruleshake-${KEYCLOAK_RULESHAKE_ORGANIZATION}",
         "description": "${role_default-roles}",
         "composite": true,
         "composites": {
@@ -433,7 +433,7 @@
   "groups": [],
   "defaultRole": {
     "id": "c3221d3a-cc3e-446b-b08e-5eceac2469bc",
-    "name": "default-roles-ruleshake-samples",
+    "name": "default-roles-ruleshake-${KEYCLOAK_RULESHAKE_ORGANIZATION}",
     "description": "${role_default-roles}",
     "composite": true,
     "clientRole": false,
@@ -490,7 +490,7 @@
       "disableableCredentialTypes": [],
       "requiredActions": [],
       "realmRoles": [
-        "default-roles-ruleshake-samples",
+        "default-roles-ruleshake-${KEYCLOAK_RULESHAKE_ORGANIZATION}",
         "USER"
       ],
       "clientRoles": {
@@ -559,13 +559,13 @@
       "clientId": "account",
       "name": "${client_account}",
       "rootUrl": "${authBaseUrl}",
-      "baseUrl": "/realms/ruleshake-samples/account/",
+      "baseUrl": "/realms/ruleshake-${KEYCLOAK_RULESHAKE_ORGANIZATION}/account/",
       "surrogateAuthRequired": false,
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "redirectUris": [
-        "/realms/ruleshake-samples/account/*"
+        "/realms/ruleshake-${KEYCLOAK_RULESHAKE_ORGANIZATION}/account/*"
       ],
       "webOrigins": [],
       "notBefore": 0,
@@ -603,13 +603,13 @@
       "clientId": "account-console",
       "name": "${client_account-console}",
       "rootUrl": "${authBaseUrl}",
-      "baseUrl": "/realms/ruleshake-samples/account/",
+      "baseUrl": "/realms/ruleshake-${KEYCLOAK_RULESHAKE_ORGANIZATION}/account/",
       "surrogateAuthRequired": false,
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "redirectUris": [
-        "/realms/ruleshake-samples/account/*"
+        "/realms/ruleshake-${KEYCLOAK_RULESHAKE_ORGANIZATION}/account/*"
       ],
       "webOrigins": [],
       "notBefore": 0,
@@ -903,7 +903,7 @@
           "protocolMapper": "oidc-hardcoded-claim-mapper",
           "consentRequired": false,
           "config": {
-            "claim.value": "samples",
+            "claim.value": "${KEYCLOAK_RULESHAKE_ORGANIZATION}",
             "userinfo.token.claim": "true",
             "id.token.claim": "true",
             "access.token.claim": "true",
@@ -932,13 +932,13 @@
       "clientId": "security-admin-console",
       "name": "${client_security-admin-console}",
       "rootUrl": "${authAdminUrl}",
-      "baseUrl": "/admin/ruleshake-samples/console/",
+      "baseUrl": "/admin/ruleshake-${KEYCLOAK_RULESHAKE_ORGANIZATION}/console/",
       "surrogateAuthRequired": false,
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "redirectUris": [
-        "/admin/ruleshake-samples/console/*"
+        "/admin/ruleshake-${KEYCLOAK_RULESHAKE_ORGANIZATION}/console/*"
       ],
       "webOrigins": [
         "+"
