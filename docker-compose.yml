@@ -7,9 +7,9 @@ services:
     container_name: "keycloak-db"
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ${KEYCLOAK_DB}
-      POSTGRES_USER: ${KEYCLOAK_DB_USER}
-      POSTGRES_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
+      POSTGRES_DB: "${KEYCLOAK_DB}"
+      POSTGRES_USER: "${KEYCLOAK_DB_USER}"
+      POSTGRES_PASSWORD: "${KEYCLOAK_DB_PASSWORD}"
     volumes:
       - ./keycloak/keycloak-db-data:/var/lib/postgresql/data
     healthcheck:
@@ -23,104 +23,92 @@ services:
     image: "quay.io/keycloak/keycloak:23.0"
     container_name: "keycloak"
     restart: unless-stopped
-    depends_on:
-      keycloak-db:
-        condition: service_healthy
     environment:
-      KC_DB: postgres
-      KC_DB_URL: jdbc:postgresql://keycloak-db/${KEYCLOAK_DB}
-      KC_DB_USERNAME: ${KEYCLOAK_DB_USER}
-      KC_DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
-      KC_HTTP_PORT: 9090
-      KC_HEALTH_ENABLED: true
-      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN_USER}
-      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KC_DB: "postgres"
+      KC_DB_URL: "jdbc:postgresql://keycloak-db/${KEYCLOAK_DB}"
+      KC_DB_USERNAME: "${KEYCLOAK_DB_USER}"
+      KC_DB_PASSWORD: "${KEYCLOAK_DB_PASSWORD}"
+      KC_HTTP_PORT: "${KEYCLOAK_PORT}"
+      KC_HEALTH_ENABLED: "true"
+      KEYCLOAK_ADMIN: "${KEYCLOAK_ADMIN_USER}"
+      KEYCLOAK_ADMIN_PASSWORD: "${KEYCLOAK_ADMIN_PASSWORD}"
+      KEYCLOAK_RULESHAKE_STUDIO_CLIENT_ID: "${KEYCLOAK_RULESHAKE_STUDIO_CLIENT_ID}"
+      KEYCLOAK_RULESHAKE_STUDIO_CLIENT_SECRET: "${KEYCLOAK_RULESHAKE_STUDIO_CLIENT_SECRET}"
+      RULESHAKE_STUDIO_PORT: "${RULESHAKE_STUDIO_PORT}"
     command: start-dev --import-realm
     volumes:
       - ./keycloak/import:/opt/keycloak/data/import
     ports:
-      - "9090:9090"
+      - "${KEYCLOAK_PORT}:${KEYCLOAK_PORT}"
     healthcheck:
-      test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/9090;echo -e \"GET /health/ready HTTP/1.1\r\nhost: http://localhost\r\nConnection: close\r\n\r\n\" >&3;grep \"HTTP/1.1 200 OK\" <&3"]
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/${KEYCLOAK_PORT};echo -e \"GET /health/ready HTTP/1.1\r\nhost: http://localhost\r\nConnection: close\r\n\r\n\" >&3;grep \"HTTP/1.1 200 OK\" <&3"]
       interval: 10s
       timeout: 10s
       retries: 5
       start_period: 10s
+    depends_on:
+      keycloak-db:
+        condition: service_healthy
 
   mongo1:
     image: "mongo:7.0"
     container_name: "mongo1"
     restart: unless-stopped
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
     volumes:
       - ./mongo/mongo1-data:/data/db
-      - ./mongo/mongodb.key:/data/mongodb.key
-    command: mongod --replSet rs0 --port 27017 --keyFile /data/mongodb.key
+    command: mongod --replSet rs0 --port 27017
     healthcheck:
-      test: echo 'rs.status().ok' | mongosh localhost:27017 -u ${MONGO_ROOT_USERNAME} -p ${MONGO_ROOT_PASSWORD} --quiet
+      test: mongosh --eval "try { rs.status().ok } catch (e) { rs.initiate().ok }"
       interval: 10s
       timeout: 10s
-      retries: 5
       start_period: 10s
-
-  mongosetup:
-    build: "./mongo/setup"
-    container_name: "mongo-setup"
-    environment:
-      MONGO_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
-      MONGO_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
-    depends_on:
-      mongo1:
-        condition: service_started
-    volumes:
-      - ./mongo/status:/data/
+      retries: 5
 
   mongo-express:
     image: "mongo-express:1.0.2-20-alpine3.19"
     container_name: "mongo-express"
     restart: unless-stopped
     ports:
-      - '6082:8081'
+      - "${MONGO_EXPRESS_PORT}:8081"
+    environment:
+      ME_CONFIG_MONGODB_URL: "mongodb://mongo1:27017/"
+      ME_CONFIG_BASICAUTH: "true"
+      ME_CONFIG_BASICAUTH_USERNAME: "${MONGO_EXPRESS_USERNAME}"
+      ME_CONFIG_BASICAUTH_PASSWORD: "${MONGO_EXPRESS_PASSWORD}"
     depends_on:
       mongo1:
         condition: service_healthy
-    environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_ROOT_USERNAME}
-      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_ROOT_PASSWORD}
-      ME_CONFIG_MONGODB_SERVER: mongo1
-      ME_CONFIG_BASICAUTH: true
-      ME_CONFIG_BASICAUTH_USERNAME: ${MONGO_EXPRESS_USERNAME}
-      ME_CONFIG_BASICAUTH_PASSWORD: ${MONGO_EXPRESS_PASSWORD}
-      ME_CONFIG_MONGODB_URL: mongo://${MONGO_ROOT_USERNAME}:${MONGO_ROOT_PASSWORD}@mongo1:27017/
 
   studio:
     image: "ruleshake/studio"
     container_name: "ruleshake-studio"
     restart: unless-stopped
     ports:
-      - '8080:80'
+      - "${RULESHAKE_STUDIO_PORT}:80"
     environment:
-      VITE_RULESHAKE_CATALOG_URL: "http://localhost:8081/api"
-      VITE_RULESHAKE_RUNNER_URL: "http://localhost:8082/api"
-      VITE_RULESHAKE_REFERENTIAL_URL: "http://localhost:8083/api"
-      VITE_AUTH_AUTHORITY: ${KEYCLOAK_AUTHORITY}
-      VITE_AUTH_CLIENT_ID: ${KEYCLOAK_RULESHAKE_STUDIO_CLIENT_ID}
-      VITE_AUTH_CLIENT_SECRET: ${KEYCLOAK_RULESHAKE_STUDIO_CLIENT_SECRET}
+      VITE_RULESHAKE_CATALOG_URL: "http://localhost:${RULESHAKE_CATALOG_PORT}/api"
+      VITE_RULESHAKE_RUNNER_URL: "http://localhost:${RULESHAKE_RUNNER_PORT}/api"
+      VITE_RULESHAKE_REFERENTIAL_URL: "http://localhost:${RULESHAKE_REFERENTIAL_PORT}/api"
+      VITE_AUTH_AUTHORITY: "${KEYCLOAK_AUTHORITY}"
+      VITE_AUTH_CLIENT_ID: "${KEYCLOAK_RULESHAKE_STUDIO_CLIENT_ID}"
+      VITE_AUTH_CLIENT_SECRET: "${KEYCLOAK_RULESHAKE_STUDIO_CLIENT_SECRET}"
+    depends_on:
+      keycloak:
+        condition: service_healthy
 
   catalog:
     image: "ruleshake/catalog"
     container_name: "ruleshake-catalog"
     restart: unless-stopped
     ports:
-      - '8081:8081'
+      - "${RULESHAKE_CATALOG_PORT}:${RULESHAKE_CATALOG_PORT}"
     environment:
-      CATALOG_PORT: 8081
-      MONGO_URL: mongodb://${RULESHAKE_CATALOG_DB_USERNAME}:${RULESHAKE_CATALOG_DB_PASSWORD}@mongo1:27017
-      REFERENTIAL_URL: http://referential:8083/api
-      RUNNER_URL: http://runner:8082/api
-      OAUTH2_ISSUER_URI: ${KEYCLOAK_AUTHORITY}
+      CATALOG_PORT: "${RULESHAKE_CATALOG_PORT}"
+      MONGO_URL: "mongodb://mongo1:27017"
+      REFERENTIAL_URL: "http://referential:${RULESHAKE_REFERENTIAL_PORT}/api"
+      RUNNER_URL: "http://runner:${RULESHAKE_RUNNER_PORT}/api"
+      OAUTH2_ISSUER_URI: "${KEYCLOAK_AUTHORITY}"
+      STUDIO_ALLOWED_ORIGINS: "http://localhost:${RULESHAKE_STUDIO_PORT}"
     depends_on:
       mongo1:
         condition: service_healthy
@@ -132,12 +120,13 @@ services:
     container_name: "ruleshake-runner"
     restart: unless-stopped
     ports:
-      - '8082:8082'
+      - "${RULESHAKE_RUNNER_PORT}:${RULESHAKE_RUNNER_PORT}"
     environment:
-      RUNNER_PORT: 8082
-      MONGO_URL: mongodb://${RULESHAKE_RUNNER_DB_USERNAME}:${RULESHAKE_RUNNER_DB_PASSWORD}@mongo1:27017
-      REFERENTIAL_URL: http://referential:8083/api
-      OAUTH2_ISSUER_URI: ${KEYCLOAK_AUTHORITY}
+      RUNNER_PORT: "${RULESHAKE_RUNNER_PORT}"
+      MONGO_URL: "mongodb://mongo1:27017"
+      REFERENTIAL_URL: "http://referential:${RULESHAKE_REFERENTIAL_PORT}/api"
+      OAUTH2_ISSUER_URI: "${KEYCLOAK_AUTHORITY}"
+      STUDIO_ALLOWED_ORIGINS: "http://localhost:${RULESHAKE_STUDIO_PORT}"
     depends_on:
       mongo1:
         condition: service_healthy
@@ -149,11 +138,12 @@ services:
     container_name: "ruleshake-referential"
     restart: unless-stopped
     ports:
-      - '8083:8083'
+      - "${RULESHAKE_REFERENTIAL_PORT}:${RULESHAKE_REFERENTIAL_PORT}"
     environment:
-      REFERENTIAL_PORT: 8083
-      MONGO_URL: mongodb://${RULESHAKE_REFERENTIAL_DB_USERNAME}:${RULESHAKE_REFERENTIAL_DB_PASSWORD}@mongo1:27017
-      OAUTH2_ISSUER_URI: ${KEYCLOAK_AUTHORITY}
+      REFERENTIAL_PORT: "${RULESHAKE_REFERENTIAL_PORT}"
+      MONGO_URL: "mongodb://mongo1:27017"
+      OAUTH2_ISSUER_URI: "${KEYCLOAK_AUTHORITY}"
+      STUDIO_ALLOWED_ORIGINS: "http://localhost:${RULESHAKE_STUDIO_PORT}"
     depends_on:
       mongo1:
         condition: service_healthy

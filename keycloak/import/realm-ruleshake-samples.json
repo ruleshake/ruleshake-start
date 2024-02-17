@@ -104,7 +104,7 @@
       }
     ],
     "client": {
-      "ruleshake-studio": [
+      "${KEYCLOAK_RULESHAKE_STUDIO_CLIENT_ID}": [
         {
           "id": "85a0ddeb-8e62-4375-8bc9-82dc5cc133fc",
           "name": "uma_protection",
@@ -482,11 +482,11 @@
     {
       "id": "ccb649bc-7dcb-4e8a-931c-b33755185734",
       "createdTimestamp": 1705700641536,
-      "username": "service-account-ruleshake-studio",
+      "username": "service-account-${KEYCLOAK_RULESHAKE_STUDIO_CLIENT_ID}",
       "enabled": true,
       "totp": false,
       "emailVerified": false,
-      "serviceAccountClientId": "ruleshake-studio",
+      "serviceAccountClientId": "${KEYCLOAK_RULESHAKE_STUDIO_CLIENT_ID}",
       "disableableCredentialTypes": [],
       "requiredActions": [],
       "realmRoles": [
@@ -494,7 +494,7 @@
         "USER"
       ],
       "clientRoles": {
-        "ruleshake-studio": [
+        "${KEYCLOAK_RULESHAKE_STUDIO_CLIENT_ID}": [
           "uma_protection"
         ]
       },
@@ -769,7 +769,7 @@
     },
     {
       "id": "c6f453f8-5b50-4c63-a4d0-0b369ca32561",
-      "clientId": "ruleshake-studio",
+      "clientId": "${KEYCLOAK_RULESHAKE_STUDIO_CLIENT_ID}",
       "name": "",
       "description": "",
       "rootUrl": "",
@@ -779,13 +779,13 @@
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
-      "secret": "UZbzqJyFkmqaWIPqJBsR4Xb5Np1c1k7A",
+      "secret": "${KEYCLOAK_RULESHAKE_STUDIO_CLIENT_SECRET}",
       "redirectUris": [
-        "http://localhost:8080/auth-silent-refresh",
-        "http://localhost:8080/auth-callback"
+        "http://localhost:${RULESHAKE_STUDIO_PORT}/auth-silent-refresh",
+        "http://localhost:${RULESHAKE_STUDIO_PORT}/auth-callback"
       ],
       "webOrigins": [
-        "http://localhost:8080"
+        "http://localhost:${RULESHAKE_STUDIO_PORT}"
       ],
       "notBefore": 0,
       "bearerOnly": false,
@@ -802,7 +802,7 @@
         "oidc.ciba.grant.enabled": "false",
         "client.secret.creation.time": "1705700641",
         "backchannel.logout.session.required": "true",
-        "post.logout.redirect.uris": "http://localhost:8080/login##http://localhost:8080/logout##http://localhost:8080",
+        "post.logout.redirect.uris": "http://localhost:${RULESHAKE_STUDIO_PORT}/login##http://localhost:${RULESHAKE_STUDIO_PORT}/logout##http://localhost:${RULESHAKE_STUDIO_PORT}",
         "oauth2.device.authorization.grant.enabled": "false",
         "backchannel.logout.revoke.offline.tokens": "false"
       },
