@@ -24,7 +24,7 @@ configuring variable collections, Referential the dataset management service and
 # We host
 
 RuleShake SaaS offer is under development. 
-However, you can access effortlessly to the [demo environment](https://studio-demo.ruleshake.com) 
+However, you can access effortlessly to the [demo environment](https://studio.ruleshake.com) 
 and discover what it is possible to do with RuleShake suite.
 
 # You host
@@ -44,7 +44,7 @@ Add a new entry in your `/etc/hosts` (Linux) or `C:\Windows\System32\drivers\etc
 > by back services to validate tokens.
 >
 > You don't have to do that if you're running Keycloak (or another identity provider) somewhere accessible both inside 
-> the docker compose with the same name.
+> and outside the docker compose with the same name.
 
 ## Configuration
 
