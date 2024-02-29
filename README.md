@@ -21,7 +21,15 @@ configuring variable collections, Referential the dataset management service and
   <a href="https://ruleshake.com/blog/architecture"><img src="./imgs/ruleshake-architecture.png" alt="ruleshake-architecture"></a>
 </p>
 
-# Requirements
+# We host
+
+RuleShake SaaS offer is under development. 
+However, you can access effortlessly to the [demo environment](https://studio-demo.ruleshake.com) 
+and discover what it is possible to do with RuleShake suite.
+
+# You host
+
+## Requirements
 
 Install `Docker Compose`: https://docs.docker.com/compose/install/
 
@@ -35,13 +43,14 @@ Add a new entry in your `/etc/hosts` (Linux) or `C:\Windows\System32\drivers\etc
 > This is required because the issuer of the access token got from Studio should have the same origin as the issuer used
 > by back services to validate tokens.
 >
-> You don't have to do that if you're running Keycloak (or another identity provider) outside the docker compose.
+> You don't have to do that if you're running Keycloak (or another identity provider) somewhere accessible both inside 
+> the docker compose with the same name.
 
-# Configuration
+## Configuration
 
 Check the [.env](.env) file.
 
-## Ports mapping
+### Ports mapping
 
 | Variable                     | Default value |
 |------------------------------|---------------|
@@ -52,7 +61,7 @@ Check the [.env](.env) file.
 | `RULESHAKE_RUNNER_PORT`      | `9002`        |
 | `RULESHAKE_REFERENTIAL_PORT` | `9003`        |
 
-## Keycloak
+### Keycloak
 
 At starting of Keycloak, a realm named `ruleshake-${KEYCLOAK_RULESHAKE_ORGANIZATION}` is created.
 The default value of `KEYCLOAK_RULESHAKE_ORGANIZATION` is `sample`, you can change it in [.env](.env) file.
@@ -63,7 +72,7 @@ You can create a dedicated client in keycloak to separate user operations from m
 
 Users `user` and `guest` are created. `user` can do CRUD actions when `guest` has only read-only access.
 
-## MongoDB
+### MongoDB
 
 At starting of mongodb, a replicaSet is initialized. 
 Even if there is only one node of mongo, the replicaSet is required to do some operations such as transactions.
@@ -72,7 +81,7 @@ To simplify starting, security is disabled when interacting with mongo.
 That said, mongo is exposed only inside the docker compose network. 
 Mongo Express, a web-based MongoDB admin interface, is secured by a basic authentication (find credentials in [.env](.env) file).
 
-# Start
+## Start
 
 ```shell
 git clone https://github.com/ruleshake/ruleshake-start.git
