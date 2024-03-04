@@ -1,0 +1,27 @@
+name: Release workflow
+
+on:
+  push:
+    tags:
+      - "*"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - id: dotenv
+        uses: falti/dotenv-action@v1.1
+      - uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+      - uses: imjasonh/setup-crane@v0.3
+      - run: |
+          echo "${{ secrets.DOCKERHUB_TOKEN }}" | crane auth login docker.io --username ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+          crane tag ruleshake/studio:${{ steps.dotenv.outputs.RULESHAKE_STUDIO_VERSION }} ${{ github.ref_name }}
+          crane tag ruleshake/catalog:${{ steps.dotenv.outputs.RULESHAKE_CATALOG_VERSION }} ${{ github.ref_name }}
+          crane tag ruleshake/runner:${{ steps.dotenv.outputs.RULESHAKE_RUNNER_VERSION }} ${{ github.ref_name }}
+          crane tag ruleshake/referential:${{ steps.dotenv.outputs.RULESHAKE_REFERENTIAL_VERSION }} ${{ github.ref_name }}
+        env:
+          CRANE_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          CRANE_PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}

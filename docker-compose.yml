@@ -81,7 +81,7 @@ services:
         condition: service_healthy
 
   studio:
-    image: "ruleshake/studio"
+    image: "ruleshake/studio:${RULESHAKE_STUDIO_VERSION}"
     container_name: "ruleshake-studio"
     restart: unless-stopped
     ports:
@@ -98,7 +98,7 @@ services:
         condition: service_healthy
 
   catalog:
-    image: "ruleshake/catalog"
+    image: "ruleshake/catalog:${RULESHAKE_CATALOG_VERSION}"
     container_name: "ruleshake-catalog"
     restart: unless-stopped
     ports:
@@ -117,7 +117,7 @@ services:
         condition: service_healthy
 
   runner:
-    image: "ruleshake/runner"
+    image: "ruleshake/runner:${RULESHAKE_RUNNER_VERSION}"
     container_name: "ruleshake-runner"
     restart: unless-stopped
     ports:
@@ -135,7 +135,7 @@ services:
         condition: service_healthy
 
   referential:
-    image: "ruleshake/referential"
+    image: "ruleshake/referential:${RULESHAKE_REFERENTIAL_VERSION}"
     container_name: "ruleshake-referential"
     restart: unless-stopped
     ports:
