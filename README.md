@@ -13,8 +13,8 @@ Define your rules simply and let RuleShake offer the best personalized package t
 </p>
 
 <p align="center">
-Ruleshake is made up of Studio which is its configuration interface, Catalog which is the service for creating and 
-configuring variable collections, Referential the dataset management service and Runner the variable collection evaluation service.
+Ruleshake is made up of Studio which is its configuration interface and RuleShake Server, which hosts the creation and
+configuration of variable collections (catalog), the dataset management (referential) and the evaluation of collections (runner).
 </p>
 
 <p align="center">
@@ -55,11 +55,8 @@ Check the [.env](.env) file.
 | Variable                     | Default value |
 |------------------------------|---------------|
 | `KEYCLOAK_PORT`              | `9090`        |
-| `MONGO_EXPRESS_PORT`         | `9091`        |
 | `RULESHAKE_STUDIO_PORT`      | `9000`        |
-| `RULESHAKE_CATALOG_PORT`     | `9001`        |
-| `RULESHAKE_RUNNER_PORT`      | `9002`        |
-| `RULESHAKE_REFERENTIAL_PORT` | `9003`        |
+| `RULESHAKE_SERVER_PORT`      | `9001`        |
 
 ### Keycloak
 
@@ -72,14 +69,10 @@ You can create a dedicated client in keycloak to separate user operations from m
 
 Users `user` and `guest` are created. `user` can do CRUD actions when `guest` has only read-only access.
 
-### MongoDB
+### PostgreSQL
 
-At starting of mongodb, a replicaSet is initialized. 
-Even if there is only one node of mongo, the replicaSet is required to do some operations such as transactions.
-
-To simplify starting, security is disabled when interacting with mongo. 
-That said, mongo is exposed only inside the docker compose network. 
-Mongo Express, a web-based MongoDB admin interface, is secured by a basic authentication (find credentials in [.env](.env) file).
+RuleShake Server stores everything in PostgreSQL (one schema per module, created at startup).
+The database is exposed only inside the docker compose network; its data is kept in `./postgres/postgres-data`.
 
 ## Start
 
@@ -110,10 +103,10 @@ curl --location 'http://keycloak:9090/realms/ruleshake-samples/protocol/openid-c
 ```
 
 Then, call the desired API using the token you just retrieved. Example of evaluating a collection of variables in
-RuleShake Runner:
+RuleShake Server:
 
 ```shell
-curl --location 'http://localhost:9002/api/v1/evaluations' \
+curl --location 'http://localhost:9001/api/runner/v1/evaluations' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer <access_token>' \
 --data '{

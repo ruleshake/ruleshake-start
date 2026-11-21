@@ -19,9 +19,7 @@ jobs:
       - run: |
           echo "${{ secrets.DOCKERHUB_TOKEN }}" | crane auth login docker.io --username ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
           crane tag ruleshake/studio:${{ steps.dotenv.outputs.RULESHAKE_STUDIO_VERSION }} ${{ github.ref_name }}
-          crane tag ruleshake/catalog:${{ steps.dotenv.outputs.RULESHAKE_CATALOG_VERSION }} ${{ github.ref_name }}
-          crane tag ruleshake/runner:${{ steps.dotenv.outputs.RULESHAKE_RUNNER_VERSION }} ${{ github.ref_name }}
-          crane tag ruleshake/referential:${{ steps.dotenv.outputs.RULESHAKE_REFERENTIAL_VERSION }} ${{ github.ref_name }}
+          crane tag ruleshake/server:${{ steps.dotenv.outputs.RULESHAKE_SERVER_VERSION }} ${{ github.ref_name }}
         env:
           CRANE_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           CRANE_PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}

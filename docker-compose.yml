@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
 
   keycloak-db:
@@ -51,34 +49,22 @@ services:
       keycloak-db:
         condition: service_healthy
 
-  mongo1:
-    image: "mongo:7.0"
-    container_name: "mongo1"
+  postgres:
+    image: "postgres:16.1-bullseye"
+    container_name: "ruleshake-postgres"
     restart: unless-stopped
+    environment:
+      POSTGRES_DB: "${RULESHAKE_DB}"
+      POSTGRES_USER: "${RULESHAKE_DB_USER}"
+      POSTGRES_PASSWORD: "${RULESHAKE_DB_PASSWORD}"
     volumes:
-      - ./mongo/mongo1-data:/data/db
-    command: mongod --replSet rs0 --port 27017
+      - ./postgres/postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: mongosh --eval "try { rs.status().ok } catch (e) { rs.initiate().ok }"
+      test: pg_isready -U ${RULESHAKE_DB_USER} -d ${RULESHAKE_DB}
       interval: 10s
       timeout: 10s
-      start_period: 10s
       retries: 5
-
-  mongo-express:
-    image: "mongo-express:1.0.2-20-alpine3.19"
-    container_name: "mongo-express"
-    restart: unless-stopped
-    ports:
-      - "${MONGO_EXPRESS_PORT}:8081"
-    environment:
-      ME_CONFIG_MONGODB_URL: "mongodb://mongo1:27017/"
-      ME_CONFIG_BASICAUTH: "true"
-      ME_CONFIG_BASICAUTH_USERNAME: "${MONGO_EXPRESS_USERNAME}"
-      ME_CONFIG_BASICAUTH_PASSWORD: "${MONGO_EXPRESS_PASSWORD}"
-    depends_on:
-      mongo1:
-        condition: service_healthy
+      start_period: 10s
 
   studio:
     image: "ruleshake/studio:${RULESHAKE_STUDIO_VERSION}"
@@ -87,9 +73,9 @@ services:
     ports:
       - "${RULESHAKE_STUDIO_PORT}:80"
     environment:
-      VITE_RULESHAKE_CATALOG_URL: "http://localhost:${RULESHAKE_CATALOG_PORT}/api"
-      VITE_RULESHAKE_RUNNER_URL: "http://localhost:${RULESHAKE_RUNNER_PORT}/api"
-      VITE_RULESHAKE_REFERENTIAL_URL: "http://localhost:${RULESHAKE_REFERENTIAL_PORT}/api"
+      VITE_RULESHAKE_CATALOG_URL: "http://localhost:${RULESHAKE_SERVER_PORT}/api/catalog"
+      VITE_RULESHAKE_RUNNER_URL: "http://localhost:${RULESHAKE_SERVER_PORT}/api/runner"
+      VITE_RULESHAKE_REFERENTIAL_URL: "http://localhost:${RULESHAKE_SERVER_PORT}/api/referential"
       VITE_AUTH_AUTHORITY: "${KEYCLOAK_AUTHORITY}"
       VITE_AUTH_CLIENT_ID: "${KEYCLOAK_RULESHAKE_STUDIO_CLIENT_ID}"
       VITE_AUTH_CLIENT_SECRET: "${KEYCLOAK_RULESHAKE_STUDIO_CLIENT_SECRET}"
@@ -97,56 +83,20 @@ services:
       keycloak:
         condition: service_healthy
 
-  catalog:
-    image: "ruleshake/catalog:${RULESHAKE_CATALOG_VERSION}"
-    container_name: "ruleshake-catalog"
+  server:
+    image: "ruleshake/server:${RULESHAKE_SERVER_VERSION}"
+    container_name: "ruleshake-server"
     restart: unless-stopped
     ports:
-      - "${RULESHAKE_CATALOG_PORT}:${RULESHAKE_CATALOG_PORT}"
+      - "${RULESHAKE_SERVER_PORT}:8080"
     environment:
-      CATALOG_PORT: "${RULESHAKE_CATALOG_PORT}"
-      MONGO_URL: "mongodb://mongo1:27017"
-      REFERENTIAL_URL: "http://referential:${RULESHAKE_REFERENTIAL_PORT}/api"
-      RUNNER_URL: "http://runner:${RULESHAKE_RUNNER_PORT}/api"
+      POSTGRES_URL: "jdbc:postgresql://postgres:5432/${RULESHAKE_DB}"
+      POSTGRES_USERNAME: "${RULESHAKE_DB_USER}"
+      POSTGRES_PASSWORD: "${RULESHAKE_DB_PASSWORD}"
       OAUTH2_ISSUER_URI: "${KEYCLOAK_AUTHORITY}"
       STUDIO_ALLOWED_ORIGINS: "http://localhost:${RULESHAKE_STUDIO_PORT}"
     depends_on:
-      mongo1:
-        condition: service_healthy
-      keycloak:
-        condition: service_healthy
-
-  runner:
-    image: "ruleshake/runner:${RULESHAKE_RUNNER_VERSION}"
-    container_name: "ruleshake-runner"
-    restart: unless-stopped
-    ports:
-      - "${RULESHAKE_RUNNER_PORT}:${RULESHAKE_RUNNER_PORT}"
-    environment:
-      RUNNER_PORT: "${RULESHAKE_RUNNER_PORT}"
-      MONGO_URL: "mongodb://mongo1:27017"
-      REFERENTIAL_URL: "http://referential:${RULESHAKE_REFERENTIAL_PORT}/api"
-      OAUTH2_ISSUER_URI: "${KEYCLOAK_AUTHORITY}"
-      STUDIO_ALLOWED_ORIGINS: "http://localhost:${RULESHAKE_STUDIO_PORT}"
-    depends_on:
-      mongo1:
-        condition: service_healthy
-      keycloak:
-        condition: service_healthy
-
-  referential:
-    image: "ruleshake/referential:${RULESHAKE_REFERENTIAL_VERSION}"
-    container_name: "ruleshake-referential"
-    restart: unless-stopped
-    ports:
-      - "${RULESHAKE_REFERENTIAL_PORT}:${RULESHAKE_REFERENTIAL_PORT}"
-    environment:
-      REFERENTIAL_PORT: "${RULESHAKE_REFERENTIAL_PORT}"
-      MONGO_URL: "mongodb://mongo1:27017"
-      OAUTH2_ISSUER_URI: "${KEYCLOAK_AUTHORITY}"
-      STUDIO_ALLOWED_ORIGINS: "http://localhost:${RULESHAKE_STUDIO_PORT}"
-    depends_on:
-      mongo1:
+      postgres:
         condition: service_healthy
       keycloak:
         condition: service_healthy
