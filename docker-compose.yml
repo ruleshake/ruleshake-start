@@ -78,6 +78,8 @@ services:
       VITE_RULESHAKE_REFERENTIAL_URL: "http://localhost:${RULESHAKE_SERVER_PORT}/api/referential"
       VITE_AUTH_AUTHORITY: "${KEYCLOAK_AUTHORITY}"
       RULESHAKE_STUDIO_URL: "http://localhost:${RULESHAKE_STUDIO_PORT}"
+      # ribbon naming the environment in Studio, none when empty
+      VITE_RULESHAKE_ENVIRONMENT: "${RULESHAKE_ENVIRONMENT_LABEL:-}"
       VITE_AUTH_CLIENT_ID: "${KEYCLOAK_RULESHAKE_STUDIO_CLIENT_ID}"
       VITE_AUTH_CLIENT_SECRET: "${KEYCLOAK_RULESHAKE_STUDIO_CLIENT_SECRET}"
     depends_on:
