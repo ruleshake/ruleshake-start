@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1160 500" width="1160" height="500" font-family="Inter, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#5f6b63"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1160" height="500" rx="16" fill="#ffffff"/>
+
+  <!-- docker compose -->
+  <rect x="190" y="20" width="950" height="460" rx="16" fill="#f6f7f6" stroke="#9aa59d" stroke-dasharray="6 4"/>
+  <text x="210" y="48" font-size="15" font-weight="700" fill="#1f2a22">docker compose</text>
+
+  <!-- Business user -->
+  <rect x="20" y="118" width="140" height="64" rx="10" fill="#ffffff" stroke="#9aa59d"/>
+  <circle cx="90" cy="138" r="9" fill="none" stroke="#1f2a22" stroke-width="1.8"/>
+  <path d="M74 164 a16 12 0 0 1 32 0" fill="none" stroke="#1f2a22" stroke-width="1.8"/>
+  <text x="90" y="178" text-anchor="middle" font-size="12" fill="#1f2a22">Business user</text>
+
+  <!-- Applications -->
+  <rect x="20" y="318" width="140" height="64" rx="10" fill="#ffffff" stroke="#9aa59d"/>
+  <circle cx="46" cy="350" r="11" fill="none" stroke="#c98a1b" stroke-width="3" stroke-dasharray="4 3"/>
+  <text x="102" y="355" text-anchor="middle" font-size="13" font-weight="600" fill="#1f2a22">Applications</text>
+
+  <!-- Studio -->
+  <rect x="220" y="96" width="270" height="108" rx="10" fill="#ffffff" stroke="#1b5e20" stroke-width="1.5"/>
+  <text x="355" y="128" text-anchor="middle" font-size="17" font-weight="600" fill="#1f2a22">RuleShake Studio</text>
+  <text x="355" y="150" text-anchor="middle" font-size="12" fill="#5f6b63">ruleshake/studio · port 9000</text>
+  <text x="355" y="168" text-anchor="middle" font-size="12" fill="#5f6b63">collections, types, formulas,</text>
+  <text x="355" y="184" text-anchor="middle" font-size="12" fill="#5f6b63">simulation, datasets</text>
+
+  <!-- Keycloak -->
+  <rect x="830" y="96" width="280" height="108" rx="10" fill="#ffffff" stroke="#9aa59d" stroke-width="1.5"/>
+  <text x="970" y="128" text-anchor="middle" font-size="17" font-weight="600" fill="#1f2a22">Keycloak</text>
+  <text x="970" y="150" text-anchor="middle" font-size="12" fill="#5f6b63">identity provider · port 9090</text>
+  <text x="970" y="168" text-anchor="middle" font-size="12" fill="#5f6b63">realm ruleshake-sample</text>
+  <text x="970" y="184" text-anchor="middle" font-size="12" fill="#5f6b63">+ keycloak-db (PostgreSQL)</text>
+
+  <!-- Server -->
+  <rect x="220" y="250" width="560" height="200" rx="12" fill="#ffffff" stroke="#1b5e20" stroke-width="1.8"/>
+  <text x="500" y="276" text-anchor="middle" font-size="17" font-weight="700" fill="#1f2a22">RuleShake Server</text>
+  <text x="500" y="294" text-anchor="middle" font-size="12" fill="#5f6b63">ruleshake/server · port 9001 · Spring Boot, Java 25</text>
+
+  <rect x="245" y="308" width="120" height="66" rx="10" fill="#e8f2e9" stroke="#1b5e20"/>
+  <text x="305" y="334" text-anchor="middle" font-size="15" font-weight="600" fill="#1b5e20">Catalog</text>
+  <text x="305" y="352" text-anchor="middle" font-size="11" fill="#5f6b63">collections, types,</text>
+  <text x="305" y="366" text-anchor="middle" font-size="11" fill="#5f6b63">publications</text>
+
+  <rect x="375" y="308" width="120" height="66" rx="10" fill="#e8f2e9" stroke="#1b5e20"/>
+  <text x="435" y="334" text-anchor="middle" font-size="15" font-weight="600" fill="#1b5e20">Referential</text>
+  <text x="435" y="352" text-anchor="middle" font-size="11" fill="#5f6b63">datasets,</text>
+  <text x="435" y="366" text-anchor="middle" font-size="11" fill="#5f6b63">classifiers</text>
+
+  <rect x="505" y="308" width="120" height="66" rx="10" fill="#e8f2e9" stroke="#1b5e20"/>
+  <text x="565" y="334" text-anchor="middle" font-size="15" font-weight="600" fill="#1b5e20">Runner</text>
+  <text x="565" y="352" text-anchor="middle" font-size="11" fill="#5f6b63">evaluation of the</text>
+  <text x="565" y="366" text-anchor="middle" font-size="11" fill="#5f6b63">deployed collections</text>
+
+  <rect x="635" y="308" width="120" height="66" rx="10" fill="#e8f2e9" stroke="#1b5e20"/>
+  <text x="695" y="334" text-anchor="middle" font-size="15" font-weight="600" fill="#1b5e20">Users</text>
+  <text x="695" y="352" text-anchor="middle" font-size="11" fill="#5f6b63">preferences</text>
+  <text x="695" y="366" text-anchor="middle" font-size="11" fill="#5f6b63">(theme, language)</text>
+
+  <rect x="245" y="390" width="510" height="40" rx="8" fill="#f6f7f6" stroke="#9aa59d"/>
+  <text x="500" y="415" text-anchor="middle" font-size="13" fill="#1f2a22"><tspan font-weight="600">RuleShake Core</tspan> · calculation engine, CEL formulas</text>
+
+  <!-- PostgreSQL -->
+  <g transform="translate(860 300)">
+    <ellipse cx="110" cy="10" rx="110" ry="14" fill="#ffffff" stroke="#336791" stroke-width="1.5"/>
+    <path d="M0 10 L0 116 A110 14 0 0 0 220 116 L220 10" fill="#ffffff" stroke="#336791" stroke-width="1.5"/>
+    <text x="110" y="48" text-anchor="middle" font-size="15" font-weight="600" fill="#336791">PostgreSQL</text>
+    <text x="110" y="68" text-anchor="middle" font-size="11" fill="#5f6b63">one schema per module:</text>
+    <text x="110" y="84" text-anchor="middle" font-size="11" fill="#5f6b63">catalog, referential, users,</text>
+    <text x="110" y="100" text-anchor="middle" font-size="11" fill="#5f6b63">referential_&lt;organization&gt;</text>
+  </g>
+
+  <!-- arrows -->
+  <path d="M160 150 L216 150" stroke="#5f6b63" stroke-width="1.6" fill="none" marker-end="url(#arrow)"/>
+
+  <path d="M490 150 L826 150" stroke="#5f6b63" stroke-width="1.6" fill="none" marker-end="url(#arrow)"/>
+  <text x="658" y="140" text-anchor="middle" font-size="11" fill="#5f6b63">login (OpenID Connect)</text>
+
+  <path d="M355 204 L355 246" stroke="#5f6b63" stroke-width="1.6" fill="none" marker-end="url(#arrow)"/>
+  <text x="365" y="230" font-size="11" fill="#5f6b63">REST API · /api/catalog, /api/referential, /api/runner</text>
+
+  <path d="M740 250 L740 226 L970 226 L970 208" stroke="#5f6b63" stroke-width="1.6" fill="none" marker-end="url(#arrow)"/>
+  <text x="855" y="220" text-anchor="middle" font-size="11" fill="#5f6b63">token validation (issuer)</text>
+
+  <path d="M160 350 L216 350" stroke="#5f6b63" stroke-width="1.6" fill="none" marker-end="url(#arrow)"/>
+  <text x="90" y="404" text-anchor="middle" font-size="11" fill="#5f6b63">evaluation</text>
+  <text x="90" y="418" text-anchor="middle" font-size="11" fill="#5f6b63">Bearer token</text>
+
+  <path d="M780 360 L856 360" stroke="#5f6b63" stroke-width="1.6" fill="none" marker-end="url(#arrow)"/>
+</svg>

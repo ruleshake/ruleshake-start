@@ -1,7 +1,7 @@
 services:
 
   keycloak-db:
-    image: "postgres:16.1-bullseye"
+    image: "postgres:16"
     container_name: "keycloak-db"
     restart: unless-stopped
     environment:
@@ -50,7 +50,7 @@ services:
         condition: service_healthy
 
   postgres:
-    image: "postgres:16.1-bullseye"
+    image: "postgres:16"
     container_name: "ruleshake-postgres"
     restart: unless-stopped
     environment:
@@ -98,6 +98,8 @@ services:
       POSTGRES_PASSWORD: "${RULESHAKE_DB_PASSWORD}"
       OAUTH2_ISSUER_URI: "${KEYCLOAK_AUTHORITY}"
       STUDIO_ALLOWED_ORIGINS: "http://localhost:${RULESHAKE_STUDIO_PORT}"
+      SECURITY_USER_NAME: "${RULESHAKE_ACTUATOR_USER}"
+      SECURITY_USER_PASSWORD: "${RULESHAKE_ACTUATOR_PASSWORD}"
     depends_on:
       postgres:
         condition: service_healthy

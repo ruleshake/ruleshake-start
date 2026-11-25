@@ -9,7 +9,7 @@ Define your rules simply and let RuleShake offer the best personalized package t
 </p>
 
 <p align="center">
-  <a href="https://ruleshake.com/docs/intro">Docs</a> - <a href="https://ruleshake.com/blog/">Blog</a> - <a href="https://demo.ruleshake.com">Demo</a>
+  <a href="https://ruleshake.com/intro">Docs</a> - <a href="https://ruleshake.com/blog/">Blog</a> - <a href="https://demo.ruleshake.com">Demo</a>
 </p>
 
 <p align="center">
@@ -18,13 +18,13 @@ configuration of variable collections (catalog), the dataset management (referen
 </p>
 
 <p align="center">
-  <a href="https://ruleshake.com/blog/architecture"><img src="./imgs/ruleshake-architecture.png" alt="ruleshake-architecture"></a>
+  <img src="./imgs/ruleshake-architecture.svg" alt="ruleshake-architecture">
 </p>
 
 # We host
 
 RuleShake SaaS offer is under development. 
-However, you can access effortlessly to the [demo environment](https://studio.ruleshake.com) 
+However, you can access effortlessly to the [demo environment](https://demo.ruleshake.com) 
 and discover what it is possible to do with RuleShake suite.
 
 # You host
@@ -64,8 +64,8 @@ At starting of Keycloak, a realm named `ruleshake-${KEYCLOAK_RULESHAKE_ORGANIZAT
 The default value of `KEYCLOAK_RULESHAKE_ORGANIZATION` is `sample`, you can change it in [.env](.env) file.
 
 The realm contains a client named `ruleshake-studio` used by Studio to authenticate users. 
-This client, via it's service account, can be used to retrieve a token and call RuleShake services REST API.
-You can create a dedicated client in keycloak to separate user operations from machine-to-machine calls
+This client, via its service account, can be used to retrieve a token and call the RuleShake Server REST API.
+You can create a dedicated client in Keycloak to separate user operations from machine-to-machine calls.
 
 Users `user` and `guest` are created. `user` can do CRUD actions when `guest` has only read-only access.
 
@@ -73,6 +73,17 @@ Users `user` and `guest` are created. `user` can do CRUD actions when `guest` ha
 
 RuleShake Server stores everything in PostgreSQL (one schema per module, created at startup).
 The database is exposed only inside the docker compose network; its data is kept in `./postgres/postgres-data`.
+
+### Versions
+
+The images used are set in [.env](.env): `RULESHAKE_SERVER_VERSION` (`ruleshake/server`) and
+`RULESHAKE_STUDIO_VERSION` (`ruleshake/studio`).
+
+### Actuator
+
+The health probes `http://localhost:9001/actuator/health/liveness` and `.../readiness` are public. The other actuator
+endpoints (`/actuator/prometheus`, `/actuator/info`...) use basic authentication with `RULESHAKE_ACTUATOR_USER` /
+`RULESHAKE_ACTUATOR_PASSWORD` (`admin`:`admin` by default).
 
 ## Start
 
@@ -95,12 +106,15 @@ Access to RuleShake Studio on `http://localhost:9000` and login with `user`:`use
 To use ruleshake services API, first get an access token from Keycloak:
 
 ```shell
-curl --location 'http://keycloak:9090/realms/ruleshake-samples/protocol/openid-connect/token' \
+curl --location 'http://keycloak:9090/realms/ruleshake-sample/protocol/openid-connect/token' \
 --header 'Content-Type: application/x-www-form-urlencoded' \
 --data-urlencode 'client_id=ruleshake-studio' \
 --data-urlencode 'client_secret=changeit' \
 --data-urlencode 'grant_type=client_credentials'
 ```
+
+> [!NOTE]
+> The realm is `ruleshake-${KEYCLOAK_RULESHAKE_ORGANIZATION}`: `ruleshake-sample` with the default [.env](.env).
 
 Then, call the desired API using the token you just retrieved. Example of evaluating a collection of variables in
 RuleShake Server:
